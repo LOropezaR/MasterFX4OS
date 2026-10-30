@@ -1,6 +1,7 @@
 /**
  * @file serial.cpp
- * @author Diego Abarca Robles (dabarcar2200@alumno.ipn.mx)
+ * @author Abarca Robles Diego, Cruz Alvarez Fernando, Huang Rojas Armando Mao
+ * Li, Oropeza Rangel Luis
  * @brief Programa de prueba del primer prototipo de Master FX4OS donde se
  * prueba la comunicacion serial entre el arduino y la computadora para cambiar
  * los bancos.
