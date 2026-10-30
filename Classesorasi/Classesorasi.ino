@@ -1,10 +1,10 @@
 //Codigo con clase (OOP)
 //Codigo desarrollado por OpenSource UPIITA
-/*Desarrolladores
-Oropeza Rangel Luis
-Huang Rojas Armando Mao Li
-Abraca Robles Diego
-
+/*Desarrolladores\
+ *Abarca Robles Diego
+ *Cruz Alvarez Fernando
+ *Huang Rojas Armando Mao Li
+ *Oropeza Rangel Luis
 */
 
 
