@@ -29,13 +29,14 @@ class Bank
   private:
   int set[3]; //aquí se guardarán los pines que se usarán
   public:
-  Bank(int p1, int p2, int p3) //con este podremos construir y guardar los bancos
-  {
+  Bank(int p1, int p2, int p3){//con este podremos construir y guardar los bancos
+    setBnk(p1, p2, p3)
+  }
+  void setBnk(int p1, int p2, int p3){
     this->set[0] = p1;
     this->set[1] = p2;
     this->set[2] = p3;
   }
-  
   void begin() //configuramos pines de salida
   {
     pinMode(sal1, OUTPUT);
@@ -74,6 +75,7 @@ unsigned long tiempoRebote = 0;
 
 void setup() //declaramos que pines queremos como entradas y salidas
 {
+  Serial.begin(9600);
   pinMode(entrada1, INPUT);
   pinMode(entrada2, INPUT);
   pinMode(entrada3, INPUT);
@@ -96,7 +98,7 @@ void loop()
   
   unsigned long tiempoActual = millis();
   
-  if((tiempoActual - tiempoRebote) > bounce) //
+  if((tiempoActual - tiempoRebote) > bounce) // verifica que no hayan rebotes en el push button
   {
     if(lectura1 == HIGH && estadoAnterior1 == LOW)    //
     {
@@ -116,4 +118,9 @@ void loop()
   }
   estadoAnterior1 = lectura1;
   estadoAnterior2 = lectura2;
+
+  if(Serial.available() > 0){
+    char dato = Serial.read();
+    
+  }
 }

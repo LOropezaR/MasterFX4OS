@@ -13,6 +13,7 @@
  */
 #include <fcntl.h>
 #include <iostream>
+#include <ostream>
 #include <termios.h>
 #include <unistd.h>
 /**
@@ -21,33 +22,58 @@
  *
  **/
 int main() {
-  int serialPort =
-      open("/dev/ttyACM0",
-           O_RDWR); // cambiar esta cosa por el puerto q estemos trabajando
+  const char *port = "/dev/ttyUSB0";
+  int serial_fd = open(port, O_RDWR | O_NOCTTY);
 
-  if (serialPort < 0) {
-    std::cerr << "Error al abrir el puerto serial" << std::endl;
+  if (serial_fd < 0) {
+    std::cerr << "Error al abrir el puerto" << std::endl;
     return 1;
   }
 
-  struct termios tty; // Configuración de parámetros.
-  tcgetattr(serialPort, &tty);
-  cfsetospeed(&tty, B9600);
+  struct termios tty;
+  tcgetattr(serial_fd, &tty);
+
+  // Configuracion del puerto para enviar y recibir datos
+  tty.c_cflag &= ~PARENB;
+  tty.c_cflag &= ~CSTOP;
+  tty.c_cflag &= ~CSIZE;
+  tty.c_cflag |= CS8;
+  tty.c_cflag &= ~CRTSCTS;
+  tty.c_cflag |= CREAD | CLOCAL;
+
+  tty.c_cflag &= ~ICANON;
+  tty.c_cflag &= ~ECHO;
+
+  tty.c_cc[VMIN] = 0;
+  tty.c_cc[VTIME] = 5;
+
   cfsetispeed(&tty, B9600);
+  cfsetospeed(&tty, B9600);
+  tcsetattr(serial_fd, TCSANOW, &tty);
 
-  tty.c_cflag &= ~PARENB; // sin bit de paridad
-  tty.c_cflag &= ~CSTOPB; // 1 bit de parada
-  tty.c_cflag |= CS8;     // 8 bits de lectura de datos
+  sleep(2);
 
-  tcsetattr(serialPort, TCSANOW, &tty);
-
+  char opc;
   char buffer[256];
-  while (true) {
-    /**
-     * Aquí iría todo lo del programa para cambiar los bancos
-     **/
-  }
 
-  close(serialPort);
-  return 0;
+  std::cout << "Master FX4OS" << std::endl;
+
+  while (true) {
+    std::cout << "a) Configurar Bancos" << std::endl;
+    std::cout << "q) Salir" << std::endl;
+    std::cout << "> ";
+    std::cin >> opc;
+
+    if (opc == 'q' || opc == 'Q') {
+      std::cout << "Saliendo ..." << std::endl;
+      break;
+    }
+
+    switch (opc) {
+    case 'a':
+      std::cout << "Seleccionar banco:";
+
+      break;
+    }
+  }
 }
