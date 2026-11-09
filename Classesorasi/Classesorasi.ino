@@ -121,6 +121,5 @@ void loop()
 
   if(Serial.available() > 0){
     char dato = Serial.read();
-    
   }
 }
