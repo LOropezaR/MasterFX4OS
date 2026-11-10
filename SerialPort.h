@@ -21,10 +21,10 @@ private:
   int serial_fd; // Descriptor del archivo del puerto serial
 
 public:
-  // Constructor: Configura y abre el puerto
+  // Constructor
   SerialPort(const char *portName);
 
-  // Destructor: Cierra el puerto automáticamente al salir
+  // Destructor
   ~SerialPort();
 
   // Métodos para enviar y recibir

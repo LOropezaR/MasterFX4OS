@@ -19,8 +19,8 @@
 #define sal1 5
 #define sal2 6
 #define sal3 7
-#define clk 8 //salida de reloj
-const unsigned long bounce = 50;
+#define clk 8 //*salida de reloj (probablemente se descontinue el uso de esta salida)*//
+const unsigned long bounce = 50; //tiempo de debounce para evitar leer rebotes en los botones
 
 //Creamos una clase para, posteriormente, leer
 //las instrucciones que le demos de manera externa
@@ -29,14 +29,13 @@ class Bank
   private:
   int set[3]; //aquí se guardarán los pines que se usarán
   public:
-  Bank(int p1, int p2, int p3){//con este podremos construir y guardar los bancos
-    setBnk(p1, p2, p3)
-  }
-  void setBnk(int p1, int p2, int p3){
+  Bank(int p1, int p2, int p3) //con este podremos construir y guardar los bancos
+  {
     this->set[0] = p1;
     this->set[1] = p2;
     this->set[2] = p3;
   }
+  
   void begin() //configuramos pines de salida
   {
     pinMode(sal1, OUTPUT);
@@ -86,10 +85,27 @@ void setup() //declaramos que pines queremos como entradas y salidas
     bnk[i].begin();
   }
   
-  bnk[idbnk].sett();        //iniciamos en el banco cero aunque en un futuro se cambiará
-                            //para poder iniciar en el ultimo usado
+  bnk[idbnk].sett();//iniciamos en el banco cero aunque en un futuro se cambiará
+                    //para poder iniciar en el ultimo usado
+}
+void printBnk() { //Funcion para indicar el banco actual
+  Serial.print("Cambio a banco: ");
+  Serial.println(idbnk + 1);
 }
 
+void nextBnk() { //Funcion para cambiar al siguiente banco
+  idbnk++;
+  if(idbnk >= 3) idbnk = 0;
+  bnk[idbnk].sett();
+  printBnk();
+}
+
+void previousBnk() { //Funcion para cambiar al banco anterior
+  idbnk--;
+  if(idbnk < 0) idbnk = 2;
+  bnk[idbnk].sett();
+  printBnk();
+}
 void loop() 
 {
   //analizamos si hay entradas en los botones
@@ -98,28 +114,30 @@ void loop()
   
   unsigned long tiempoActual = millis();
   
-  if((tiempoActual - tiempoRebote) > bounce) // verifica que no hayan rebotes en el push button
+  if((tiempoActual - tiempoRebote) > bounce) // aquí se evalua que la señal del push no sea un rebote
   {
-    if(lectura1 == HIGH && estadoAnterior1 == LOW)    //
+    if(lectura1 == HIGH && estadoAnterior1 == LOW)//Esto nos permite únicamente avanzar un banco 
+                                                  //aunque mantengamos apretado el boton
     {
-      idbnk++;
-      if(idbnk >= 3) idbnk = 0;                       //Crea un loop para que no suba a un banco inexistente 
-      bnk[idbnk].sett();                              //indicamos en que banco se ubica y hacemos el seteo de pines
+      nextBnk();                              //indicamos en que banco se ubica y hacemos el seteo de pines
       tiempoRebote = tiempoActual;
     }
 
     if(lectura2 == HIGH && estadoAnterior2 == LOW)    //resta o baja el banco en el que se encuentre
     {
-      idbnk--;
-      if(idbnk < 0) idbnk = 2;                       //Crea un loop para que no baje a un banco inexistente 
-      bnk[idbnk].sett();                             //indicamos en que banco se ubica y hacemos el seteo de pines
+      previousBnk();
       tiempoRebote = tiempoActual;
     }
   }
+
+  if(Serial.available() > 0) { //Aquí se leen los datos mandados por la computadora
+    char opc = Serial.read();
+    if(opc == 'n' || opc == 'N')
+      nextBnk();
+    if(opc == 'p' || opc == 'P')
+      previousBnk();
+  }
+
   estadoAnterior1 = lectura1;
   estadoAnterior2 = lectura2;
-
-  if(Serial.available() > 0){
-    char dato = Serial.read();
-  }
 }

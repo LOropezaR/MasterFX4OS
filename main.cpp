@@ -15,7 +15,7 @@
 #include <termios.h>
 #include <unistd.h>
 
-char obtenerTeclaSinEnter() {
+char obtenerTeclaSinEnter() { // Función para leer teclas similar a getch()
   char buf = 0;
   struct termios old;
 
@@ -36,30 +36,34 @@ char obtenerTeclaSinEnter() {
 }
 
 int main() {
-  std::cout << "Iniciando comunicación con Arduino..." << std::endl;
-  SerialPort arduino("/dev/ttyUSB0");
+  std::cout << "Master FX4OS" << std::endl;
+  SerialPort arduino(
+      "/dev/ttyUSB0"); // Creamos un puerto para empezar a trabajar
 
-  char opcion;
-  std::cout << "\nPresiona 1 (Encender), 0 (Apagar) o q (Salir): \n";
+  char opc;
+  std::cout
+      << "\nPresiona n (Siguiente Banco), p (Banco Anterior) o q (Salir): \n";
 
   while (true) {
-    opcion = obtenerTeclaSinEnter();
+    opc = obtenerTeclaSinEnter();
 
-    if (opcion == 'q' || opcion == 'Q') {
+    if (opc == 'q' || opc == 'Q') {
       std::cout << "\nSaliendo..." << std::endl;
       break;
     }
 
-    if (opcion == '1' || opcion == '0') {
-      std::cout << "Enviando: " << opcion << std::endl;
-      arduino.enviarDato(opcion);
+    if (opc == 'n' || opc == 'N' || opc == 'p' || opc == 'P') {
+      std::cout << "Enviando: " << opc << std::endl;
+      arduino.enviarDato(opc);
 
       usleep(100000);
 
       std::string respuesta = arduino.leerDato();
       if (!respuesta.empty()) {
-        std::cout << "Arduino respondió: " << respuesta;
+        std::cout << respuesta;
       }
+    } else {
+      std::cout << "opcion no valida" << std::endl;
     }
   }
 
